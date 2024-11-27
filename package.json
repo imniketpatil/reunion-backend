@@ -1,0 +1,11 @@
+{
+  "name": "reunion",
+  "version": "1.0.0",
+  "description": "Backend For Reunion Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Niket Patil",
+  "license": "ISC"
+}
