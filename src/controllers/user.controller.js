@@ -121,7 +121,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User Logged Out"));
+    .json(new ApiResponse(200, "User Logged Out"));
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -174,6 +174,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
+  if (!oldPassword || !newPassword) {
+    throw new ApiError(
+      400,
+      "All fields are required: oldPassword, newPassword."
+    );
+  }
+
   try {
     const user = await User.findById(req.user?._id);
 
@@ -187,21 +194,18 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Invalid Old Password");
     }
 
-    // Update user's password
     user.password = newPassword;
     await user.save({
-      validateBeforeSave: false, // Avoids schema validation for this operation
+      validateBeforeSave: false,
     });
 
-    // Respond with success message
     return res
       .status(200)
-      .json(new ApiResponse(200, {}, "Password Changed Successfully!"));
+      .json(new ApiResponse(200, "Password Changed Successfully!"));
   } catch (error) {
-    // Handle any errors
     return res
       .status(error.statusCode || 500)
-      .json(new ApiResponse(error.statusCode || 500, {}, error.message));
+      .json(new ApiResponse(error.statusCode || 500, error.message));
   }
 });
 
@@ -255,7 +259,7 @@ const deleteAccount = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "Account Deleted Successfully"));
+    .json(new ApiResponse(200, "Account Deleted Successfully"));
 });
 
 export {
