@@ -90,7 +90,7 @@ const getTasks = asyncHandler(async (req, res) => {
       }
     }
 
-    const tasks = await Task.find(query).sort({ startTime: 1 }); // Sorted by start time
+    const tasks = await Task.find(query).sort({ startTime: 1 });
 
     return res
       .status(200)
@@ -173,26 +173,22 @@ const updateTask = asyncHandler(async (req, res) => {
 
 const deleteTask = asyncHandler(async (req, res) => {
   try {
-    const { id } = req.params; // Get the task ID from route parameters
+    const { taskId } = req.params;
 
-    // Validate the task ID
-    if (!id) {
+    if (!taskId) {
       throw new ApiError(400, "Task ID is required for deletion.");
     }
 
-    // Find and delete the task
-    const deletedTask = await Task.findByIdAndDelete(id);
+    const deletedTask = await Task.findByIdAndDelete(taskId);
 
     if (!deletedTask) {
       throw new ApiError(404, "Task not found. Deletion failed.");
     }
 
-    // Return success response
     return res
       .status(200)
       .json(new ApiResponse(200, deletedTask, "Task deleted successfully."));
   } catch (error) {
-    // Handle and return error response
     return res
       .status(error.statusCode || 500)
       .json(new ApiResponse(error.statusCode || 500, null, error.message));
