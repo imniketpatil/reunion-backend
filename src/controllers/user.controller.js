@@ -4,7 +4,11 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 
 const testResult = asyncHandler(async (req, res) => {
-  res.send("Server is Running");
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(200, ["Surver is running"], "User Create Successfully")
+    );
 });
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -43,13 +47,13 @@ const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
     const accessToken = user.generateAccessToken();
-    const refershToken = user.generateRefreshToken();
+    const refreshToken = user.generateRefreshToken();
 
-    user.refershToken = refershToken;
+    user.refreshToken = refreshToken;
 
     user.save({ validateBeforeSave: false });
 
-    return { accessToken, refershToken };
+    return { accessToken, refreshToken };
   } catch (error) {
     new ApiError(500, "Something Went Wrong While Generating AccessToken");
   }
@@ -82,8 +86,11 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
+  console.log(accessToken);
+
   return res
     .status(200)
+    .cookie("testCookie", "testValue", { httpOnly: true })
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
